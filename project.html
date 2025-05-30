@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>projects - Kidknightik</title>
+    <link rel="icon" href="logo.png" type="image/png">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap');
+
+        * {
+            font-family: 'Pixelify Sans', sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: black;
+            color: white;
+        }
+
+        canvas#background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .content {
+            position: relative;
+            z-index: 1;
+        }
+
+        main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .terminal-window {
+            background-color: #222;
+            color: #fff;
+            padding: 0;
+            border: 2px solid #444;
+            max-width: 1000px;
+            width: 100%;
+            box-shadow: 0 0 10px rgba(128, 128, 128, 0.5);
+        }
+
+        .title-bar {
+            background-color: #333;
+            color: #fff;
+            padding: 5px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-button {
+            cursor: default;
+        }
+
+        .terminal-window pre {
+            padding: 10px;
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .terminal-input {
+            padding: 10px;
+            color: #0f0;
+        }
+
+        .reboot-command {
+            color: #0f0;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .terminal-window {
+                max-width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="background"></canvas>
+    <div class="content">
+        <main>
+            <div class="terminal-window">
+                <div class="title-bar">
+                    <span class="title">cat projects.txt</span>
+                    <span class="close-button">X</span>
+                </div>
+                <pre>
+Kidknightik@project:~$ whoami
+Kidknightik's projects
+
+Kidknightik@project:~$ cat projects.txt
+У меня есть много проектов которые к сожалению утеряны на данный момент
+
+Kidknightik@project:~$ cat PyProjects.txt
+У меня есть много проектов на питоне, самый большой это пиксельный 2д шутер с магазином, врагами, боссами и т.д. Игра с закупкой оружием и так далее
+
+Kidknightik@project:~$ cat HTMLprojects.txt
+Не забываем что я являюсь еще html програмистом, у меня есть 2 bio сайта( один из них этот ), Википедии, статьи и много другого
+                </pre>
+                <div class="terminal-input">
+                    user@project:~$ <a href="index.html" class="reboot-command">sudo reboot now</a>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script>
+        const canvas = document.getElementById('background');
+        const ctx = canvas.getContext('2d');
+        let stars = [];
+        const numStars = 100;
+        const maxDistance = 80;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Star {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.size = Math.random() * 2 + 1;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.x < 0) this.x = canvas.width;
+                if (this.x > canvas.width) this.x = 0;
+                if (this.y < 0) this.y = canvas.height;
+                if (this.y > canvas.height) this.y = 0;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
+                ctx.fillStyle = 'white';
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < numStars; i++) {
+            stars.push(new Star());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            stars.forEach(star => {
+                star.update();
+                star.draw();
+            });
+
+            ctx.beginPath();
+            for (let i = 0; i < stars.length; i++) {
+                for (let j = i + 1; j < stars.length; j++) {
+                    const dx = stars[i].x - stars[j].x;
+                    const dy = stars[i].y - stars[j].y;
+                    const distSq = dx * dx + dy * dy;
+                    if (distSq < maxDistance * maxDistance) {
+                        ctx.moveTo(stars[i].x, stars[i].y);
+                        ctx.lineTo(stars[j].x, stars[j].y);
+                    }
+                }
+            }
+            ctx.strokeStyle = 'white';
+            ctx.stroke();
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>
